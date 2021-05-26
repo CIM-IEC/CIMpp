@@ -1,8 +1,10 @@
 #ifndef CIMCONTENTHANDLER_HPP
 #define CIMCONTENTHANDLER_HPP
 
-#include <SAX/ContentHandler.hpp>
-#include <SAX/Locator.hpp>
+#include <xercesc/sax2/DefaultHandler.hpp>
+#include <xercesc/sax2/Attributes.hpp>
+#include <xercesc/util/XMLString.hpp>
+
 
 #include <stack>
 #include <list>
@@ -13,12 +15,11 @@
 #include "Task.hpp"
 #include "Folders.hpp"
 
-class CIMContentHandler : public Arabica::SAX::ContentHandler<std::string>
+class CIMContentHandler : public xercesc::DefaultHandler
 {
 public:
 	CIMContentHandler();
 	~CIMContentHandler();
-
 	std::vector<BaseClass*> *Objects;
 	std::unordered_map<std::string, BaseClass*> *RDFMap;
 	void setObjectsContainer(std::vector<BaseClass*> *Objects);
@@ -29,22 +30,30 @@ public:
 	bool resolveRDFRelations(); // AKA work through task queue
 
 protected:
-	void setDocumentLocator(const LocatorT &locator) override;
 	void startDocument() override;
 	void endDocument() override;
-	void startPrefixMapping(const std::string &prefix, const std::string &uri) override;
-	void endPrefixMapping(const std::string &prefix) override;
-	void startElement(const std::string &namespaceURI, const std::string &localName, const std::string &qName, const AttributesT &atts) override;
-	void endElement(const std::string &namespaceURI, const std::string &localName, const std::string &qName) override;
-	void characters(const std::string &ch) override;
-	void ignorableWhitespace(const std::string &ch) override;
-	void processingInstruction(const std::string &target, const std::string &data) override;
-	void skippedEntity(const std::string &name) override;
+	//void startPrefixMapping(const std::string &prefix, const std::string &uri) override;
+	//void endPrefixMapping(const std::string &prefix) override;
+	void startElement( const XMLCh* const uri,
+                  const XMLCh* const localname,
+                  const XMLCh* const qname,
+                  const xercesc::Attributes&  attrs );
+	void endElement( const XMLCh* const uri,
+					 const XMLCh* const localname,
+					 const XMLCh* const qname );
+	void characters( const XMLCh* const chars,
+					 const XMLSize_t length );
+	void ignorableWhitespace(const std::string &ch) ;
+	void processingInstruction(const std::string &target, const std::string &data) ;
+	void skippedEntity(const std::string &name) ;
 
-	static std::string get_rdf_id(const AttributesT &properties);
-	static std::string get_rdf_resource(const AttributesT &properties);
-	static std::string get_rdf_enum(const AttributesT &properties);
+	static std::string get_rdf_id(const xercesc::Attributes  &properties);
+	static std::string get_rdf_resource(const xercesc::Attributes  &properties);
+	static std::string get_rdf_enum(const xercesc::Attributes &properties);
 	static bool is_only_whitespace(const std::string &characters);
+
+    void error(const xercesc::SAXParseException& ex);
+    void fatalError(const xercesc::SAXParseException& ex);
 
 private:
 	std::stack<BaseClass*> objectStack;

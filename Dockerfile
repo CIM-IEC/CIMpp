@@ -17,12 +17,12 @@ RUN dnf -y install \
 	gcc-c++ \
 	make \
 	doxygen graphviz \
+	xerces-c-devel \
 	python3-pip rpmdevtools
+
 
 RUN pip3 install xmltodict chevron cmake
 # Some of the dependencies are only available in our own repo
 ADD https://packages.fein-aachen.org/redhat/fein.repo /etc/yum.repos.d/
 
-# Dependencies
-RUN dnf -y install \
-	libarabica
+

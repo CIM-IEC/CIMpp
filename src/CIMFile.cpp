@@ -3,8 +3,8 @@
 
 #include "ModelDescriptionHandler.hpp"
 #include "ModelDescription.hpp"
-#include "SAX/InputSource.hpp"
-#include "SAX/XMLReader.hpp"
+#include <xercesc/sax2/SAX2XMLReader.hpp>
+#include <xercesc/sax2/XMLReaderFactory.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -27,16 +27,32 @@ ModelDescription* CIMFile::getModelDescription()
 			//TODO: file not good, say something
 			return nullptr;
 		}
+        try
+        {
+            xercesc::XMLPlatformUtils::Initialize();
+        }
+        catch(const xercesc::XMLException& ex)
+        {
+            char* message = xercesc::XMLString::transcode(ex.getMessage());
+            std::cout << "Initialization Error :\n";
+            std::cout << "Exception message is: \n" << message << std::endl;
+            xercesc::XMLString::release(&message);
+            return modelDescription;
+        }
+
 		modelDescription = new ModelDescription();
-		ModelDescriptionHandler DescriptionHandler;
+        ModelDescriptionHandler* DescriptionHandler = new ModelDescriptionHandler();
+		DescriptionHandler->setModelDescription(modelDescription);
 
-		DescriptionHandler.setModelDescription(modelDescription);
 
-		Arabica::SAX::XMLReader<std::string> Reader;
-		Reader.setContentHandler(DescriptionHandler);
+		xercesc::SAX2XMLReader* Reader = xercesc::XMLReaderFactory::createXMLReader();
+        Reader->setFeature(xercesc::XMLUni::fgSAX2CoreValidation, false);
+		// xmlReader->setFeature(XMLUni::fgSAX2CoreNameSpaces, true);   // optional
 
-		Arabica::SAX::InputSource<std::string> source(path);
-		Reader.parse(source);
+        Reader->setContentHandler(DescriptionHandler);
+        Reader->setErrorHandler(DescriptionHandler);
+        Reader->parse(getpath().c_str());
+
 	}
 
 	return modelDescription;

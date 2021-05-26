@@ -1,0 +1,23 @@
+Diagram 0     
+41            
+18467         
+N0            
+N1            
+Area 1        
+Zone 1        
+PATL          
+TATL          
+TATL          
+PQ0           
+PQ0_0         
+SL            
+SL_0          
+L0            
+L0_0          
+L0_1          
+Ratings       
+Normal        
+ShortTerm     
+Emergency     
+N0            
+N1            

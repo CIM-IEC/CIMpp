@@ -1,11 +1,14 @@
 #include "CIMModel.hpp"
 #include "CIMContentHandler.hpp"
-#include "SAXErrorHandler.hpp"
 #include "ModelDescriptionHandler.hpp"
 #include "ModelDescription.hpp"
-#include "SAX/InputSource.hpp"
-#include "SAX/XMLReader.hpp"
 #include "CIMExceptions.hpp"
+
+
+#include <xercesc/util/XMLString.hpp>
+#include <xercesc/sax2/SAX2XMLReader.hpp>
+#include <xercesc/sax2/XMLReaderFactory.hpp>
+
 
 #include <vector>
 #include <string>
@@ -52,17 +55,32 @@ bool CIMModel::addCIMFile(std::string path)
 void CIMModel::parseFiles()
 {
 	// TODO: What happens when run twice?!
-	CIMContentHandler ContentHandler;
-	ContentHandler.setObjectsContainer(&Objects);
-	ContentHandler.setRDFMap(&RDFMap);
-
-	SAXErrorHandler ErrorHandler;
+	CIMContentHandler* ContentHandler = new CIMContentHandler();
+	ContentHandler->setObjectsContainer(&Objects);
+	ContentHandler->setRDFMap(&RDFMap);
+    try
+    {
+        xercesc::XMLPlatformUtils::Initialize();
+    }
+    catch(const xercesc::XMLException& ex)
+    {
+        char* message = xercesc::XMLString::transcode(ex.getMessage());
+        std::cout << "Initialization Error :\n";
+        std::cout << "Exception message is: \n" << message << std::endl;
+        xercesc::XMLString::release(&message);
+        return;
+    }
 
 	for(CIMFile& file : Files) //TODO: Suche evtl. mit eigener dependency-liste beschleunigen
 	{
-		Arabica::SAX::XMLReader<std::string> Reader;
-		Reader.setContentHandler(ContentHandler);
-		Reader.setErrorHandler(ErrorHandler);
+
+		xercesc::SAX2XMLReader* xmlReader = xercesc::XMLReaderFactory::createXMLReader();
+		xmlReader->setFeature(xercesc::XMLUni::fgSAX2CoreValidation, false);
+		// xmlReader->setFeature(XMLUni::fgSAX2CoreNameSpaces, true);   // optional
+		// CIMContentHandler* cimContentHandler = new CIMContentHandler();
+
+		xmlReader->setContentHandler(ContentHandler);
+		xmlReader->setErrorHandler(ContentHandler);
 
 		if(DependencyCheck == true)
 		{
@@ -88,13 +106,13 @@ void CIMModel::parseFiles()
 				}
 			}
 		}
+        xmlReader->parse(file.getpath().c_str());
 
 
-		Arabica::SAX::InputSource<std::string> source(file.getpath());
-		Reader.parse(source);
+        delete xmlReader;
 	}
 
-	ContentHandler.resolveRDFRelations();
+	ContentHandler->resolveRDFRelations();
 }
 
 void CIMModel::setDependencyCheckOn()

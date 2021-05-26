@@ -15,6 +15,8 @@ jobs:
       run: git submodule update --init --recursive
     - name: Install Doxygen
       run: sudo apt-get install doxygen 
+    - name: Install Xerces-C
+      run: sudo apt install libxerces-c-dev
       shell: bash 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}}
@@ -27,7 +29,25 @@ jobs:
           cmake ../.. -DUSE_CIM_VERSION=${{env.USE_CIM_VERSION}}
           make -j8
 
-
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}}
+      
+    - name: Configure CMake and compile
+      shell: bash
+      working-directory: ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}}/
+      run: |
+          cd ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}} 
+          cmake ../.. -DUSE_CIM_VERSION=${{env.USE_CIM_VERSION}}
+          make -j8
+    - name: Run tests
+      shell: bash
+      working-directory: ${{runner.workspace}}/libcimpp/test
+      run: |
+          ./testFiles.py $USE_CIM_VERSION
+    - uses: actions/upload-artifact@master
+      with:
+        name: test_results_${{env.USE_CIM_VERSION}}
+        path: ${{runner.workspace}}/libcimpp/test/outputs/${{env.USE_CIM_VERSION}}
 
   build-src-IEC61970_17v07:
     runs-on: ubuntu-latest
@@ -39,6 +59,53 @@ jobs:
       run: git submodule update --init --recursive
     - name: Install Doxygen
       run: sudo apt-get install doxygen 
+    - name: Install Xerces-C
+      run: sudo apt install libxerces-c-dev
+      shell: bash 
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}}
+      
+    - name: Configure CMake and compile
+      shell: bash
+      working-directory: ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}}/
+      run: |
+          cd ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}} 
+          cmake ../.. -DUSE_CIM_VERSION=${{env.USE_CIM_VERSION}}
+          make -j8
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}}
+      
+    - name: Configure CMake and compile
+      shell: bash
+      working-directory: ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}}/
+      run: |
+          cd ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}} 
+          cmake ../.. -DUSE_CIM_VERSION=${{env.USE_CIM_VERSION}}
+          make -j8
+    - name: Run tests
+      shell: bash
+      working-directory: ${{runner.workspace}}/libcimpp/test
+      run: |
+          ./testFiles.py $USE_CIM_VERSION
+    - uses: actions/upload-artifact@master
+      with:
+        name: test_results_${{env.USE_CIM_VERSION}}
+        path: ${{runner.workspace}}/libcimpp/test/outputs/${{env.USE_CIM_VERSION}}
+
+
+
+  build-src-IEC61970_16v29a_IEC61968_12v08:
+    runs-on: ubuntu-latest
+    env:
+      USE_CIM_VERSION: IEC61970_16v29a_IEC61968_12v08
+    steps:
+    - uses: actions/checkout@v2    
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
+    - name: Install Doxygen
+      run: sudo apt-get install doxygen 
+    - name: Install Xerces-C
+      run: sudo apt install libxerces-c-dev
       shell: bash 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}}
@@ -51,27 +118,26 @@ jobs:
           cmake ../.. -DUSE_CIM_VERSION=${{env.USE_CIM_VERSION}}
           make -j8
 
-  build-src-IEC61970_16v29a_IEC61968_12v08:
-    runs-on: ubuntu-latest
-    env:
-      USE_CIM_VERSION: IEC61970_16v29a_IEC61968_12v08
-    steps:
-    - uses: actions/checkout@v2    
-    - name: Checkout submodules
-      run: git submodule update --init --recursive
-    - name: Install Doxygen
-      run: sudo apt-get install doxygen 
-      shell: bash 
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}}
+      run: cmake -E make_directory ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}}
       
     - name: Configure CMake and compile
       shell: bash
-      working-directory: ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}}/
+      working-directory: ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}}/
       run: |
-          cd ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}} 
+          cd ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}} 
           cmake ../.. -DUSE_CIM_VERSION=${{env.USE_CIM_VERSION}}
           make -j8
+    - name: Run tests
+      shell: bash
+      working-directory: ${{runner.workspace}}/libcimpp/test
+      run: |
+          ./testFiles.py $USE_CIM_VERSION
+    - uses: actions/upload-artifact@master
+      with:
+        name: test_results_${{env.USE_CIM_VERSION}}
+        path: ${{runner.workspace}}/libcimpp/test/outputs/${{env.USE_CIM_VERSION}}
+
 
 
   build-src-CGMES_2-4-15_27JAN2020:
@@ -84,7 +150,9 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
     - name: Install Doxygen
-      run: sudo apt-get install doxygen 
+      run: sudo apt-get install doxygen
+    - name: Install Xerces-C
+      run: sudo apt install libxerces-c-dev 
       shell: bash 
     - name: Create Build Environment
       run: cmake -E make_directory ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}}
@@ -96,4 +164,25 @@ jobs:
           cd ${{runner.workspace}}/libcimpp/build/${{env.USE_CIM_VERSION}} 
           cmake ../.. -DUSE_CIM_VERSION=${{env.USE_CIM_VERSION}}
           make -j8
+
+    - name: Create Build Environment
+      run: cmake -E make_directory ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}}
+      
+    - name: Configure CMake and compile
+      shell: bash
+      working-directory: ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}}/
+      run: |
+          cd ${{runner.workspace}}/libcimpp/examples/cmake/build/${{env.USE_CIM_VERSION}} 
+          cmake ../.. -DUSE_CIM_VERSION=${{env.USE_CIM_VERSION}}
+          make -j8
+
+    - name: Run tests
+      shell: bash
+      working-directory: ${{runner.workspace}}/libcimpp/test
+      run: |
+          ./testFiles.py $USE_CIM_VERSION
+    - uses: actions/upload-artifact@master
+      with:
+        name: test_results_${{env.USE_CIM_VERSION}}
+        path: ${{runner.workspace}}/libcimpp/test/outputs/${{env.USE_CIM_VERSION}}
 

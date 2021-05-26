@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/" "${CMAKE_CURRENT_SOURCE_DIR}/../../cmake")
 
 add_subdirectory(doc)
-add_subdirectory(thirdparty)
+find_package(XercesC REQUIRED)
 
 set(libcimpp_MAJOR_VERSION 2)
 set(libcimpp_MINOR_VERSION 1)
@@ -52,14 +52,15 @@ endif()
 #  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/CGMES_2.4.15/generate)
 #endif()
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/<src> ${XercesC_INCLUDE_DIRS})
 file(GLOB_RECURSE SRC src/*.cpp)
 file(GLOB_RECURSE CIM_SRC ${USE_CIM_VERSION}/*.cpp)
 add_library(${PROJECT_NAME} ${SRC} ${CIM_SRC})
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "cimpp${USE_CIM_VERSION}")
 target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/${USE_CIM_VERSION}>)
 target_include_directories(${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
-target_link_libraries(${PROJECT_NAME} PUBLIC arabica)
-set_property(TARGET arabica PROPERTY POSITION_INDEPENDENT_CODE ON)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${XercesC_LIBRARIES})
+set_property(TARGET PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 include(GNUInstallDirs)
 

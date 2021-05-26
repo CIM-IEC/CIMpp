@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cim="http://iec.ch/TC57/2012/CIM-schema-cim16#" xmlns:md="http://iec.ch/TC57/61970-552/ModelDescription/1#" xmlns:entsoe="http://entsoe.eu/Secretariat/ProfileExtension/2#" xmlns:neplan="http://www.neplan.ch#">
+  <md:FullModel rdf:about="urn:uuid:a478519c-0824-4c9c-b57d-538dc9819750">
+    <md:Model.created>2016-05-20T11:42:26</md:Model.created>
+    <neplan:Model.createdBy>NEPLAN by Busarello + Cott + Partner AG, Switzerland</neplan:Model.createdBy>
+    <md:Model.scenarioTime>2016-05-20T11:42:24</md:Model.scenarioTime>
+    <md:Model.version>7</md:Model.version>
+    <md:Model.DependentOn rdf:resource="urn:uuid:4e0179c2-2c4e-439b-a972-37114355fd8e"/>
+    <md:Model.DependentOn rdf:resource="urn:uuid:cea72bd1-ee6e-42ec-9a29-a71155c422ff"/>
+    <md:Model.description>NEPLAN</md:Model.description>
+    <md:Model.modelingAuthoritySet>FULL</md:Model.modelingAuthoritySet>
+    <md:Model.profile>http://iec.ch/TC57/61970-456/StateVariables/3</md:Model.profile>
+  </md:FullModel>
+  <cim:SvVoltage rdf:ID="N13_5B20">
+    <cim:SvVoltage.v>19.552150</cim:SvVoltage.v>
+    <cim:SvVoltage.angle>-3.707720</cim:SvVoltage.angle>
+    <cim:SvVoltage.TopologicalNode rdf:resource="#N13"/>
+  </cim:SvVoltage>
+  <cim:SvVoltage rdf:ID="N12_5B20">
+    <cim:SvVoltage.v>19.605385</cim:SvVoltage.v>
+    <cim:SvVoltage.angle>-3.572950</cim:SvVoltage.angle>
+    <cim:SvVoltage.TopologicalNode rdf:resource="#N12"/>
+  </cim:SvVoltage>
+  <cim:SvVoltage rdf:ID="N0_5B20">
+    <cim:SvVoltage.v>110.000000</cim:SvVoltage.v>
+    <cim:SvVoltage.angle>-0e+000</cim:SvVoltage.angle>
+    <cim:SvVoltage.TopologicalNode rdf:resource="#N0"/>
+  </cim:SvVoltage>
+  <cim:SvPowerFlow rdf:ID="Load13-I-sv">
+    <cim:SvPowerFlow.p>0.032000</cim:SvPowerFlow.p>
+    <cim:SvPowerFlow.q>0.020000</cim:SvPowerFlow.q>
+    <cim:SvPowerFlow.Terminal rdf:resource="#E-337"/>
+  </cim:SvPowerFlow>
+  <cim:SvPowerFlow rdf:ID="Load12-H-sv">
+    <cim:SvPowerFlow.p>15.000000</cim:SvPowerFlow.p>
+    <cim:SvPowerFlow.q>3.000000</cim:SvPowerFlow.q>
+    <cim:SvPowerFlow.Terminal rdf:resource="#E-346"/>
+  </cim:SvPowerFlow>
+  <cim:SvPowerFlow rdf:ID="Load12-I-sv">
+    <cim:SvPowerFlow.p>5.000000</cim:SvPowerFlow.p>
+    <cim:SvPowerFlow.q>1.700000</cim:SvPowerFlow.q>
+    <cim:SvPowerFlow.Terminal rdf:resource="#E-398"/>
+  </cim:SvPowerFlow>
+</rdf:RDF>

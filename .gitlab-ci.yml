@@ -6,6 +6,7 @@ variables:
 stages:
   - prepare
   - build-src
+  - test-files
   - build-doc
   - deploy
 
@@ -17,7 +18,7 @@ docker:
   tags:
     - shell
 
-# Template
+# SRC Template
 .build-src: &build-src
   stage: build-src
   image: ${DOCKER_IMAGE_DEV}:${DOCKER_TAG_DEV}
@@ -48,7 +49,7 @@ build-src-16v29a-12v08:
   variables:
     CIM_VERSION: IEC61970_16v29a_IEC61968_12v08
 
-# Documentation
+# Documentation Template
 .build-doc: &build-doc
   stage: build-doc
   image: ${DOCKER_IMAGE_DEV}:${DOCKER_TAG_DEV}
@@ -77,3 +78,44 @@ build-doc-16v29a-12v08:
   <<: *build-doc
   variables:
     CIM_VERSION: IEC61970_16v29a_IEC61968_12v08
+
+# Test Files
+.test-files: &test-files
+  stage: test-files
+  image: ${DOCKER_IMAGE_DEV}:${DOCKER_TAG_DEV}
+  tags:
+    - docker
+  before_script:
+    - cd examples/cmake
+    - mkdir -p build/${CIM_VERSION} && cd build/${CIM_VERSION}
+    - cmake ../.. -DUSE_CIM_VERSION=${CIM_VERSION}
+    - make -j8
+  script:
+    - cd ../../../../test/
+    - python3 testFiles.py ${CIM_VERSION}
+    - ls -l
+  artifacts:
+    paths:
+      - test/outputs/${CIM_VERSION}
+
+test-files-CGMES:
+  <<: *test-files
+  variables:
+    CIM_VERSION: CGMES_2.4.15_27JAN2020
+
+test-files-16v29a:
+  <<: *test-files
+  variables:
+    CIM_VERSION: IEC61970_16v29a
+
+test-files-17v07:
+  <<: *test-files
+  variables:
+    CIM_VERSION: IEC61970_17v07
+
+test-files-16v29a-12v08:
+  <<: *test-files
+  variables:
+    CIM_VERSION: IEC61970_16v29a_IEC61968_12v08
+
+

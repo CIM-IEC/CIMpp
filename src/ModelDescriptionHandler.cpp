@@ -20,8 +20,6 @@ ModelDescriptionHandler::ModelDescriptionHandler() : modelDescription(nullptr)
 {
 }
 
-void ModelDescriptionHandler::setDocumentLocator(const LocatorT &locator)
-{}
 
 void ModelDescriptionHandler::startDocument()
 {
@@ -32,15 +30,16 @@ void ModelDescriptionHandler::startDocument()
 void ModelDescriptionHandler::endDocument()
 {}
 
-void ModelDescriptionHandler::startPrefixMapping(const std::string &prefix, const std::string &uri)
+void ModelDescriptionHandler::startPrefixMapping(const XMLCh *const 	prefix,
+                                                 const XMLCh *const 	uri)
 {
-	if(prefix == "cim")
+	if(std::string(xercesc::XMLString::transcode(prefix)) == "cim")
 	{
 		std::size_t pos = IEC61970CIMVersion::version.find("CIM");
 		std::string versionParser = IEC61970CIMVersion::version.substr(pos+3,2);
 
-		pos = uri.find("cim");
-		std::string versionFile = uri.substr(pos+3,2);
+		pos = std::string(xercesc::XMLString::transcode(uri)).find("cim");
+		std::string versionFile = std::string(xercesc::XMLString::transcode(uri)).substr(pos+3,2);
 
 		if(versionParser != versionFile)
 		{
@@ -49,26 +48,26 @@ void ModelDescriptionHandler::startPrefixMapping(const std::string &prefix, cons
 	}
 }
 
-void ModelDescriptionHandler::endPrefixMapping(const std::string &prefix)
-{}
-
-void ModelDescriptionHandler::startElement(const std::string &namespaceURI, const std::string &localName, const std::string &qName, const AttributesT &atts)
+void ModelDescriptionHandler::startElement(const XMLCh* const uri,
+										   const XMLCh* const localname,
+										   const XMLCh* const qName,
+										   const xercesc::Attributes&  atts)
 {
 	//Only process tags in md namespace
-	if(qName.find("md:") == std::string::npos)
+	if(std::string(xercesc::XMLString::transcode(qName)).find("md:") == std::string::npos)
 	{
 		return;
 	}
 
-	tagStack.push(qName);
+	tagStack.push(std::string(xercesc::XMLString::transcode(qName)));
 
-	if(qName.find("DependentOn") != std::string::npos)
+	if(std::string(xercesc::XMLString::transcode(qName)).find("DependentOn") != std::string::npos)
 	{
 		std::string rdfID = get_rdf_resource(atts);
 
 		modelDescription->dependencyID.push_back(rdfID);
 	}
-	else if(qName.find("FullModel") != std::string::npos)
+	else if(std::string(xercesc::XMLString::transcode(qName)).find("FullModel") != std::string::npos)
 	{
 		std::string rdfID = get_rdf_id(atts);
 
@@ -76,10 +75,12 @@ void ModelDescriptionHandler::startElement(const std::string &namespaceURI, cons
 	}
 }
 
-void ModelDescriptionHandler::endElement(const std::string &namespaceURI, const std::string &localName, const std::string &qName)
+void ModelDescriptionHandler::endElement(const XMLCh* const uri,
+										 const XMLCh* const localname,
+										 const XMLCh* const qName)
 {
 	//Only process tags in md namespace
-	if(qName.find("md:") == std::string::npos)
+	if(std::string(xercesc::XMLString::transcode(qName)).find("md:") == std::string::npos)
 	{
 		return;
 	}
@@ -87,34 +88,35 @@ void ModelDescriptionHandler::endElement(const std::string &namespaceURI, const 
 	tagStack.pop();
 }
 
-void ModelDescriptionHandler::characters(const std::string &ch) //TODO:getter
+void ModelDescriptionHandler::characters(const XMLCh* const ch,
+										 const XMLSize_t length ) //TODO:getter
 {
 	if(!tagStack.empty() && tagStack.top().find("md:") != std::string::npos)
 	{
 		std::string name = tagStack.top();
 		if(name.find("created") != std::string::npos)
 		{
-			modelDescription->created = ch;
+			modelDescription->created = std::string(xercesc::XMLString::transcode(ch));
 		}
 		else if(name.find("scenarioTime") != std::string::npos)
 		{
-			modelDescription->scenarioTime = ch;
+			modelDescription->scenarioTime = std::string(xercesc::XMLString::transcode(ch));
 		}
 		else if(name.find("version") != std::string::npos)
 		{
-			modelDescription->version = ch;
+			modelDescription->version = std::string(xercesc::XMLString::transcode(ch));
 		}
 		else if(name.find("description") != std::string::npos)
 		{
-			modelDescription->description = ch;
+			modelDescription->description = std::string(xercesc::XMLString::transcode(ch));
 		}
 		else if(name.find("modelingAuthoritySet") != std::string::npos)
 		{
-			modelDescription->modelingAuthoritySet = ch;
+			modelDescription->modelingAuthoritySet = std::string(xercesc::XMLString::transcode(ch));
 		}
 		else if(name.find("profile") != std::string::npos)
 		{
-			modelDescription->profile = ch;
+			modelDescription->profile = std::string(xercesc::XMLString::transcode(ch));
 		}
 
 	}
@@ -130,25 +132,25 @@ void ModelDescriptionHandler::processingInstruction(const std::string &target, c
 void ModelDescriptionHandler::skippedEntity(const std::string &name)
 {}
 
-std::string ModelDescriptionHandler::get_rdf_id(const AttributesT &attributes)
+std::string ModelDescriptionHandler::get_rdf_id(const xercesc::Attributes &attributes)
 {
  	for(int i = 0; i < attributes.getLength(); i++)
  	{
- 		if(attributes.getQName(i) == "rdf:ID")
- 			return attributes.getValue(i);
- 		if(attributes.getQName(i) == "rdf:about")
- 			return attributes.getValue(i).substr(0);
+ 		if(std::string(xercesc::XMLString::transcode(attributes.getQName(i))) == "rdf:ID")
+ 			return std::string(xercesc::XMLString::transcode(attributes.getValue(i)));
+ 		if(std::string(xercesc::XMLString::transcode(attributes.getQName(i))) == "rdf:about")
+ 			return std::string(xercesc::XMLString::transcode(attributes.getValue(i))).substr(0);
  	}
  	return std::string();
 }
 
-std::string ModelDescriptionHandler::get_rdf_resource(const AttributesT &attributes) //TODO: Resource in get_rdf_id ?
+std::string ModelDescriptionHandler::get_rdf_resource(const xercesc::Attributes &attributes) //TODO: Resource in get_rdf_id ?
 {
 	for(int i = 0; i < attributes.getLength(); i++)
  	{
- 		if(attributes.getQName(i) == "rdf:resource")
+ 		if(std::string(xercesc::XMLString::transcode(attributes.getQName(i))) == "rdf:resource")
  		{
- 			return attributes.getValue(i).substr(0);
+ 			return std::string(xercesc::XMLString::transcode(attributes.getValue(i))).substr(0);
  		}
  	}
  	return std::string();
@@ -157,4 +159,20 @@ std::string ModelDescriptionHandler::get_rdf_resource(const AttributesT &attribu
 void ModelDescriptionHandler::setModelDescription(ModelDescription* mDesc)
 {
 	modelDescription = mDesc;
+}
+
+
+void ModelDescriptionHandler::error(const xercesc::SAXParseException& ex)
+{
+	char* message = xercesc::XMLString::transcode(ex.getMessage());
+	std::cout << "Error " << message << " at line: " << ex.getLineNumber() << std::endl;
+	xercesc::XMLString::release(&message);
+}
+
+
+void ModelDescriptionHandler::fatalError(const xercesc::SAXParseException& ex)
+{
+	char* message = xercesc::XMLString::transcode(ex.getMessage());
+	std::cout << "Fatal Error: " << message << " at line: " << ex.getLineNumber() << std::endl;
+	xercesc::XMLString::release(&message);
 }

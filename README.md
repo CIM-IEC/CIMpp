@@ -9,13 +9,32 @@ It is recommended to use libcimpp as cmake module.
 
 ## Dependencies
 You need following software packages for libcimpp:
-+ One of the following XML parsers:
-  + [libxml2](http://www.xmlsoft.org/) (usually chosen under Linux and often can be installed as a package of the used distribution)
-  + [expat](http://expat.sourceforge.net/)
-  + [Xerces](http://xerces.apache.org/xerces-c/)
-  + [Microsoft XML Parser](https://support.microsoft.com/en-en/help/324460) (this one is used per default when building with MS Visual Studio)
-+ Build system:
-  + [cmake](https://cmake.org/)
++ The XML parser [Xerces](http://xerces.apache.org/xerces-c/)
+
+## Install Xerces
+### The UNIX / Linux way
+Install Xerces via the package-manager e.g.:
+```
+sudo apt install libxerces-c-dev
+```
+### The Windows way with MS Visual Studio
+1. Download the newest Version of [Xerces](https://xerces.apache.org/xerces-c/download.cgi)
+2. Unzip the downloaded File to your desired location
+3. Run the Windows CMake (GUI)
+4. Set the
+* source code directory, e.g.: `C:/repos/xerces-c.3.2.3`
+* build directory, e.g.: `C:/repos/xerces-c.3.2.3`
+5. Click on `Configure` and choose the Visual Studio project version, e.g.: `Visual Studio 15 2017`
+6. Click on `Finish` and wait while CMake is configuring the project.
+7. Click on `Generate` to generate the Visual Studio project files.
+8. Click on `Open Project` to open the project in Visual Studio.
+9. In Visual Studio's main menu choose `Build -> Build Solution`. This will build the `xerces` library.
+10. In Visual Studio press on the `Developer-Shell` Button at the bottom-left.
+ In case there is no such button press the Windows button on your keyboard and search for the `Developer Command Prompt for VS 2019`.
+ It might be necessary to run the Shell with Administrator rights.
+11. In the `Developer-Shell` type `cmake --build . --config Debug --target install` to install the xerces library.
+
+
 
 ## Get the Git repository
 ```bash
@@ -51,11 +70,15 @@ All available CIM versions can be determined in the [CMakeLists.txt](CMakeLists.
 3. Set the
 * source code directory, e.g.: `C:/git/libcimpp`
 * build directory, e.g.: `C:/git/libcimpp/build`
-4. Click on `Configure` and choose the Visual Studio project version, e.g.: `Visual Studio 15 2017`
-5. Click on `Finish` and wait while CMake is configuring the project.
-6. Click on `Generate` to generate the Visual Studio project files.
-7. Click on `Open Project` to open the project in Visual Studio.
-8. In Visual Studio's main menu choose `Build -> Build Solution`. This will build the `libcimpp` library.
+4. Press the `Add Entry` Button and set
+* Name: CMAKE_PREFIX_PATH
+* Type: PATH
+* Value: Path to your xerces-c installation e.g. `C:/Program/xerces-c`
+5. Click on `Configure` and choose the Visual Studio project version, e.g.: `Visual Studio 15 2017`
+6. Click on `Finish` and wait while CMake is configuring the project.
+7. Click on `Generate` to generate the Visual Studio project files.
+8. Click on `Open Project` to open the project in Visual Studio.
+9. In Visual Studio's main menu choose `Build -> Build Solution`. This will build the `libcimpp` library.
 
 ### Build instructions for using libcimpp as a cmake module
 To be continued...
